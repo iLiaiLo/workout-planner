@@ -55,7 +55,7 @@ const validateUserWorkoutId = (req, _, next) => {
       return next(error);
     }
 
-    res.locals.id = validIdData.data.validId;
+    res.locals.planId = validIdData.data.validId;
     next();
   } catch (error) {
     next(error);
