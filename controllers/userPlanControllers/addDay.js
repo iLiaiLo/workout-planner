@@ -3,7 +3,7 @@ import daysModel from "../../models/daysModel.js";
 const addDay = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { date } = req.body;
+    const { date } = res.locals;
 
     await daysModel.create({ userId, date });
 
