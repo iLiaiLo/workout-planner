@@ -1,5 +1,6 @@
+import AppError from "../errorhandlers/AppError.js";
 import isGivenIdValidObjectId from "../utils/checkId.js";
-
+import * as z from "zod";
 const validateUserId = (req, _, next) => {
   try {
     const userId = req.user.id;
@@ -47,14 +48,14 @@ const validateWorkoutId = (req, _, next) => {
 
 const validateUserWorkoutId = (req, _, next) => {
   try {
-    const { id } = req.params;
-    const pattern =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-    if (!pattern.test(id)) {
-      const error = new Error("user workout id must be UUID");
-      error.statusCode = 400;
+    const validId = z.uuid();
+    const validIdData = validId.safeParse(req.params.id);
+    if (!validIdData.success) {
+      const error = new AppError(validIdData.error);
       return next(error);
     }
+
+    res.locals.id = validIdData.data.validId;
     next();
   } catch (error) {
     next(error);
