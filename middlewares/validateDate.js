@@ -11,7 +11,7 @@ const validateDate = (req, _, next) => {
       return next(error);
     }
     const { data } = safeDate;
-    res.locals.safeDate = data;
+    res.locals.date = data;
     next();
   } catch (error) {
     next(error);
