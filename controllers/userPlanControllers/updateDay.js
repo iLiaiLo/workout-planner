@@ -3,7 +3,7 @@ import AppError from "../../errorhandlers/AppError.js";
 const updateDay = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { planId } = res.locals;
+    const { planId } = req.params;
 
     const { date } = res.locals;
 
