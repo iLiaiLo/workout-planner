@@ -1,26 +1,36 @@
-const validateSignUpInput = (req, _, next) => {
+import * as z from "zod";
+import AppError from "../errorhandlers/AppError.js";
+
+const validateSignUpInput = (req, res, next) => {
   try {
     const { email, password, confirmPassword } = req.body;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      const error = new Error("email is not valid");
-      error.statusCode = 400;
+
+    const data = z.object({
+      email: z
+        .string()
+        .regex("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", {
+          error: "invalid email format",
+        }),
+      password: z
+        .string()
+        .regex("/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/", {
+          error: "invalid password format",
+        }),
+    });
+    const safeSignupData = data.safeParse({ email, password });
+    if (!safeSignupData.success) {
+      const error = safeSignupData.error;
       return next(error);
     }
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      const error = new Error(
-        "your password does not satisfy following criterias:Password must be at least 8 characters long and include uppercase, lowercase, a number, and a special character. No spaces allowed.",
-      );
-      error.statusCode = 400;
+
+    const { safePassword, safeEmail } = safeSignupData.data;
+
+    if (safePassword !== confirmPassword) {
+      const error = new AppError("passwords don't match", 400);
       return next(error);
     }
-    if (password !== confirmPassword) {
-      const error = new Error("passwords don't match");
-      error.statusCode = 401;
-      return next(error);
-    }
+
+    res.locals.safeUserData = { safeEmail, safePassword };
 
     next();
   } catch (error) {
