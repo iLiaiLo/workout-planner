@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import AppError from "../../errorhandlers/AppError.js";
 const signup = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = res.locals.safeUserData;
 
     const existingUser = await authModel.findOne({ email });
     if (existingUser) {
