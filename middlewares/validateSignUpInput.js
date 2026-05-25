@@ -23,14 +23,15 @@ const validateSignUpInput = (req, res, next) => {
       return next(error);
     }
 
-    const { safePassword, safeEmail } = safeSignupData.data;
-
-    if (safePassword !== confirmPassword) {
+    if (safeSignupData.data.password !== confirmPassword) {
       const error = new AppError("passwords don't match", 400);
       return next(error);
     }
 
-    res.locals.safeUserData = { safeEmail, safePassword };
+    res.locals.safeUserData = {
+      email: safeSignupData.data.email,
+      password: safeSignupData.data.password,
+    };
 
     next();
   } catch (error) {
