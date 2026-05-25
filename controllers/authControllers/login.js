@@ -1,12 +1,13 @@
 import authModel from "../../models/authModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import AppError from "../../errorhandlers/AppError.js";
 const login = async (req, res, next) => {
   try {
+    const { email, password } = req.body;
     const existingUser = await authModel.findOne({ email });
     if (!existingUser) {
-      const error = new Error("user with given email already exists");
-      error.statusCode = 409;
+      const error = new AppError("user with given email already exists", 409);
       return next(error);
     }
 
@@ -15,20 +16,30 @@ const login = async (req, res, next) => {
       existingUser.password,
     );
     if (!passwordsMatched) {
-      const error = new Error("passwords are not matched");
-      error.statusCode = 401;
+      const error = new AppError("passwords are not matched", 401);
       return next(error);
     }
-    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-    const token = jwt.sign({ id: existingUser._id }, JWT_SECRET_KEY, {
+    const JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY;
+    const JWT_REFRESH_KEY = process.env.JWT_REFRESH_KEY;
+    const NODE_ENV = process.env.NODE_ENV;
+    const accessToken = jwt.sign({ id: existingUser._id }, JWT_ACCESS_KEY, {
       expiresIn: "1d",
     });
+    const refreshToken = jwt.sign({ id: existingUser._id }, JWT_REFRESH_KEY, {
+      expiresIn: "2d",
+    });
     return res
-      .cookie("token", token, {
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
         sameSite: "Strict",
-        secure: false,
+        secure: NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: NODE_ENV === "production",
+        maxAge: 48 * 60 * 60 * 1000,
       })
       .status(200)
       .json({ message: "user logged in successfully" });
