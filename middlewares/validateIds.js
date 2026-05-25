@@ -6,10 +6,10 @@ const validateUserId = (req, _, next) => {
     const userId = req.user.id;
 
     if (!isGivenIdValidObjectId(userId)) {
-      const error = new Error("userId must be ObjectId");
-      error.statusCode = 400;
+      const error = new AppError("userId must be ObjectId", 400);
       return next(error);
     }
+
     next();
   } catch (error) {
     next(error);
@@ -20,8 +20,7 @@ const validatePlanId = (req, _, next) => {
     const { planId } = req.params;
 
     if (!isGivenIdValidObjectId(planId)) {
-      const error = new Error("planId must be ObjectId");
-      error.statusCode = 400;
+      const error = new AppError("planId must be ObjectId", 400);
       return next(error);
     }
     next();
@@ -35,8 +34,7 @@ const validateWorkoutId = (req, _, next) => {
     const { workoutId } = req.body;
 
     if (!isGivenIdValidObjectId(workoutId)) {
-      const error = new Error("workoutId must be ObjectId");
-      error.statusCode = 400;
+      const error = new AppError("workoutId must be ObjectId", 400);
       return next(error);
     }
 
@@ -46,7 +44,7 @@ const validateWorkoutId = (req, _, next) => {
   }
 };
 
-const validateUserWorkoutId = (req, _, next) => {
+const validateUserWorkoutId = (req, res, next) => {
   try {
     const validId = z.uuid();
     const validIdData = validId.safeParse(req.params.id);
@@ -54,8 +52,7 @@ const validateUserWorkoutId = (req, _, next) => {
       const error = new AppError(validIdData.error);
       return next(error);
     }
-
-    res.locals.planId = validIdData.data.validId;
+    res.locals.userWorkoutId = validIdData.data;
     next();
   } catch (error) {
     next(error);
