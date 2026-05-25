@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
+import AppError from "../errorhandlers/AppError.js";
 const verifyToken = (req, _, next) => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.accessToken;
     if (!token) {
-      const error = new Error("no token for authentication");
+      const error = new AppError("no token for authentication", 401);
       return next(error);
     }
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+    jwt.verify(token, process.env.JWT_ACCESS_KEY, (err, user) => {
       if (err) {
         let message = "Authentication failed";
         if (err.name === "TokenExpiredError") {
@@ -14,7 +15,7 @@ const verifyToken = (req, _, next) => {
         } else if (err.name === "JsonWebTokenError") {
           message = "Token is invalid";
         }
-        const error = new Error(message);
+        const error = new AppError(message, 401);
         return next(error);
       }
       req.user = user;
