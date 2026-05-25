@@ -1,18 +1,21 @@
 import userWorkoutsModel from "../../models/userWorkoutsModel.js";
-
+import AppError from "../../errorhandlers/AppError.js";
 const deleteUserWorkout = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { planId, id } = req.params;
+    const { planId } = req.params;
+    const { userWorkoutId } = res.locals;
 
     const userWorkout = await userWorkoutsModel.findOneAndDelete({
       userId,
       plan: planId,
-      id,
+      id: userWorkoutId,
     });
     if (!userWorkout) {
-      const error = new Error("unable to delete non existing user workout");
-      error.statusCode = 404;
+      const error = new AppError(
+        "unable to delete non existing user workout",
+        404,
+      );
       return next(error);
     }
 
