@@ -1,12 +1,17 @@
+import * as z from "zod";
+
 const validateDate = (req, _, next) => {
   try {
-    const { date } = req.body;
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(date)) {
-      const error = new Error("date format must be YYYY-MM-DD");
-      error.statusCode = 400;
+    const date = z.string().regex("/^\d{4}-\d{2}-\d{2}$/", {
+      message: "Invalid date format. Expected YYYY-MM-DD",
+    });
+    const safeDate = date.safeParse(req.body.date);
+    if (!safeDate.success) {
+      const error = safeDate.error;
       return next(error);
     }
+    const { data } = safeDate;
+    res.locals.safeDate = data;
     next();
   } catch (error) {
     next(error);
