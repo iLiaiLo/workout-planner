@@ -20,6 +20,10 @@ const authSchema = new Schema(
         "Password must be at least 8 characters long and include uppercase, lowercase, a number, and a special character. No spaces allowed.",
       ],
     },
+    role: {
+      enum: ["admin", "user"],
+      required: true,
+    },
   },
   { timestamps: true },
 );
