@@ -16,7 +16,13 @@ const signup = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await authModel.create({ email, password: hashedPassword });
+    const role = email === process.env.ADMIN_EMAIL ? "admin" : "user";
+
+    const user = await authModel.create({
+      email,
+      password: hashedPassword,
+      role,
+    });
 
     const JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY;
     const JWT_REFRESH_KEY = process.env.JWT_REFRESH_KEY;
