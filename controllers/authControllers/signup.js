@@ -27,11 +27,13 @@ const signup = async (req, res, next) => {
     const JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY;
     const JWT_REFRESH_KEY = process.env.JWT_REFRESH_KEY;
 
-    const accessToken = jwt.sign({ id: user._id }, JWT_ACCESS_KEY, {
+    const { _id, role } = user;
+
+    const accessToken = jwt.sign({ id: _id, role }, JWT_ACCESS_KEY, {
       expiresIn: "1d",
     });
 
-    const refreshToken = jwt.sign({ id: user._id }, JWT_REFRESH_KEY, {
+    const refreshToken = jwt.sign({ id: _id, role }, JWT_REFRESH_KEY, {
       expiresIn: "2d",
     });
 
