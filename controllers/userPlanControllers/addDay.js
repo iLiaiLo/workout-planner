@@ -2,12 +2,14 @@ import daysModel from "../../models/daysModel.js";
 
 const addDay = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { date } = res.locals;
+    const { date, userId } = res.locals;
 
-    await daysModel.create({ userId, date });
+    const newDay = await daysModel.create({ userId, date });
+    const { _id } = newDay;
 
-    return res.status(201).json({ message: "successfully created day plan" });
+    return res
+      .status(201)
+      .json({ message: "successfully created day plan", _id });
   } catch (error) {
     next(error);
   }
