@@ -1,21 +1,22 @@
 import AppError from "../errorhandlers/AppError.js";
 import isGivenIdValidObjectId from "../utils/checkId.js";
-import * as z from "zod";
-const validateUserId = (req, _, next) => {
+
+const validateUserId = (req, res, next) => {
   try {
     const userId = req.user.id;
-
     if (!isGivenIdValidObjectId(userId)) {
       const error = new AppError("userId must be ObjectId", 400);
       return next(error);
     }
+    res.locals.userId = userId;
 
     next();
   } catch (error) {
     next(error);
   }
 };
-const validatePlanId = (req, _, next) => {
+
+const validatePlanId = (req, res, next) => {
   try {
     const { planId } = req.params;
 
@@ -23,13 +24,16 @@ const validatePlanId = (req, _, next) => {
       const error = new AppError("planId must be ObjectId", 400);
       return next(error);
     }
+
+    res.locals.planId = planId;
+
     next();
   } catch (error) {
     next(error);
   }
 };
 
-const validateWorkoutId = (req, _, next) => {
+const validateWorkoutId = (req, res, next) => {
   try {
     const { workoutId } = req.body;
 
@@ -38,21 +42,23 @@ const validateWorkoutId = (req, _, next) => {
       return next(error);
     }
 
+    res.locals.workoutId = workoutId;
+
     next();
   } catch (error) {
     next(error);
   }
 };
 
-const validateUserWorkoutId = (req, res, next) => {
+const validateWorkoutIdParam = (req, res, next) => {
   try {
-    const validId = z.uuid();
-    const validIdData = validId.safeParse(req.params.id);
-    if (!validIdData.success) {
-      const error = new AppError(validIdData.error);
+    const { workoutId } = req.params;
+    if (!isGivenIdValidObjectId(workoutId)) {
+      const error = new AppError("workoutId must be ObjectId", 400);
       return next(error);
     }
-    res.locals.userWorkoutId = validIdData.data;
+
+    res.locals.workoutIdParam = workoutId;
     next();
   } catch (error) {
     next(error);
@@ -63,5 +69,5 @@ export {
   validateUserId,
   validatePlanId,
   validateWorkoutId,
-  validateUserWorkoutId,
+  validateWorkoutIdParam,
 };

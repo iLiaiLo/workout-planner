@@ -8,12 +8,12 @@ const validateSignUpInput = (req, res, next) => {
     const data = z.object({
       email: z
         .string()
-        .regex("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", {
+        .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
           error: "invalid email format",
         }),
       password: z
         .string()
-        .regex("/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/", {
+        .regex(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/, {
           error: "invalid password format",
         }),
     });
