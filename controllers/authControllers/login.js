@@ -5,9 +5,13 @@ import AppError from "../../errorhandlers/AppError.js";
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      const error = new AppError("password or email field is empty", 400);
+      return next(error);
+    }
     const existingUser = await authModel.findOne({ email });
     if (!existingUser) {
-      const error = new AppError("user with given email already exists", 409);
+      const error = new AppError("user with given email does not exist", 409);
       return next(error);
     }
 
