@@ -1,15 +1,15 @@
 import { Router } from "express";
 import {
-  validatePlanId,
   validateUserId,
-  validateUserWorkoutId,
+  validatePlanId,
   validateWorkoutId,
+  validateWorkoutIdParam,
 } from "../middlewares/validateIds.js";
 import getUserWorkouts from "../controllers/userWorkoutsControllers/getUserWorkouts.js";
 import addUserWorkout from "../controllers/userWorkoutsControllers/addUserWorkouts.js";
 import updateUserWorkout from "../controllers/userWorkoutsControllers/updateUserWorkout.js";
 import deleteUserWorkout from "../controllers/userWorkoutsControllers/deleteUserWorkout.js";
-import validateUpdateData from "../middlewares/validateUserWorkoutData.js";
+import checkPlan from "../middlewares/checkPlan.js";
 
 const userWorkoutRouter = Router();
 
@@ -24,21 +24,21 @@ userWorkoutRouter.post(
   validateUserId,
   validatePlanId,
   validateWorkoutId,
+  checkPlan,
   addUserWorkout,
 );
 userWorkoutRouter.patch(
-  "/plan/:planId/workout/:id",
+  "/plan/:planId/workout/:workoutId",
   validateUserId,
   validatePlanId,
-  validateUserWorkoutId,
-  validateUpdateData,
+  validateWorkoutIdParam,
   updateUserWorkout,
 );
 userWorkoutRouter.delete(
-  "/plan/:planId/workout/:id",
+  "/plan/:planId/workout/:workoutId",
   validateUserId,
   validatePlanId,
-  validateUserWorkoutId,
+  validateWorkoutIdParam,
   deleteUserWorkout,
 );
 
