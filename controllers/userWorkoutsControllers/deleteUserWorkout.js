@@ -2,14 +2,12 @@ import userWorkoutsModel from "../../models/userWorkoutsModel.js";
 import AppError from "../../errorhandlers/AppError.js";
 const deleteUserWorkout = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { planId } = req.params;
-    const { userWorkoutId } = res.locals;
+    const { planId, userId, workoutIdParam } = res.locals;
 
     const userWorkout = await userWorkoutsModel.findOneAndDelete({
       userId,
       plan: planId,
-      id: userWorkoutId,
+      _id: workoutIdParam,
     });
     if (!userWorkout) {
       const error = new AppError(

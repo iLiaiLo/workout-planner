@@ -1,20 +1,21 @@
 import userWorkoutsModel from "../../models/userWorkoutsModel.js";
-const addUserWorkout = async (req, res, next) => {
+const addUserWorkout = async (_, res, next) => {
   try {
-    const userId = req.user.id;
-    const { planId } = req.params;
-    const { workoutId } = req.body;
-    const id = crypto.randomUUID();
+    const { planId, userId, workoutId } = res.locals;
 
-    await userWorkoutsModel.create({
-      id,
+    const newUserWorkout = await userWorkoutsModel.create({
       userId,
       plan: planId,
       workout: workoutId,
       completed: false,
     });
 
-    return res.status(201).json({ message: "workout created successfully" });
+    const { _id } = newUserWorkout;
+
+    return res.status(201).json({
+      message: "workout created successfully",
+      _id,
+    });
   } catch (error) {
     next(error);
   }
