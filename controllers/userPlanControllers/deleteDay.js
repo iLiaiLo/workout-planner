@@ -3,8 +3,7 @@ import userWorkoutsModel from "../../models/userWorkoutsModel.js";
 import AppError from "../../errorhandlers/AppError.js";
 const deleteDay = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { planId } = req.params;
+    const { planId, userId } = res.locals;
 
     const existingPlan = await daysModel.findOneAndDelete({
       _id: planId,
@@ -17,11 +16,13 @@ const deleteDay = async (req, res, next) => {
       );
       return next(error);
     }
-    const deletedUserWorkouts = await userWorkoutsModel.deleteMany({
-      plan: planId,
+
+    const { _id } = existingPlan;
+    await userWorkoutsModel.deleteMany({
+      plan: _id,
       userId,
     });
-    return res.status(200).json({ message: "day plan deleted sucessfully" });
+    return res.status(200).json({ message: "day plan deleted sucessfully." });
   } catch (error) {
     next(error);
   }

@@ -2,7 +2,8 @@ import daysModel from "../../models/daysModel.js";
 
 const getAllDays = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = res.locals.userId;
+
     const daysData = await daysModel
       .find({ userId })
       .select({ _id: 1, date: 1 });
