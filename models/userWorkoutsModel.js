@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 
 const userWorkoutsSchema = new Schema(
   {
-    id: { type: "UUID", default: () => randomUUID(), required: true },
     userId: {
       ref: "users",
       type: Schema.Types.ObjectId,
