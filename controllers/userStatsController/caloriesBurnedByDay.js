@@ -1,8 +1,8 @@
 import userWorkoutsModel from "../../models/userWorkoutsModel.js";
 import { Types } from "mongoose";
-const caloriesBurnedByDay = async (req, res, next) => {
+const caloriesBurnedByDay = async (_, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = res.locals.userId;
     const objectUserId = new Types.ObjectId(userId);
     const caloriesData = await userWorkoutsModel.aggregate([
       { $match: { userId: objectUserId, completed: true } },
