@@ -10,6 +10,7 @@ import userWorkoutRouter from "./routes/userWorkoutRoutes.js";
 import workoutsRouter from "./routes/workoutRoutes.js";
 
 import statsRouter from "./routes/statsRoutes.js";
+import authorize from "./middlewares/authorize.js";
 dotenv.config();
 const app = express();
 
@@ -23,10 +24,10 @@ app.use("/api/auth", authRouter);
 
 app.use("/api/fitness", verifyToken);
 
-app.use("/api/fitness/days", userPlanRouter);
-app.use("/api/fitness/userWorkouts", userWorkoutRouter);
+app.use("/api/fitness/days", authorize(["user"]), userPlanRouter);
+app.use("/api/fitness/userWorkouts", authorize(["user"]), userWorkoutRouter);
+app.use("/api/fitness/stats", authorize(["user"]), statsRouter);
 app.use("/api/fitness/workouts", workoutsRouter);
-app.use("/api/fitness/stats", statsRouter);
 app.use(errorHandler);
 
 mongoose
