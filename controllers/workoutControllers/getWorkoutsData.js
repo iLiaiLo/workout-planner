@@ -5,12 +5,14 @@ const getWorkoutsData = async (_, res, next) => {
     const workoutData = await workoutsModel.aggregate([
       {
         $group: {
-          _id: "$routineName",
-          description: { $first: "$description" },
+          _id: {
+            routineName: "$routineName",
+          },
           workouts: {
             $push: {
               _id: "$_id",
               workoutName: "$workoutName",
+              description: "$description",
               howToMake: "$howToMake",
               sets: "$sets",
               reps: "$reps",
@@ -24,8 +26,7 @@ const getWorkoutsData = async (_, res, next) => {
       {
         $project: {
           _id: 0,
-          routineName: "$_id",
-          description: 1,
+          routineName: "$_id.routineName",
           workouts: 1,
         },
       },
