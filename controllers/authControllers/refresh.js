@@ -46,3 +46,4 @@ const refreshToken = (req, res, next) => {
     next(error);
   }
 };
+export default refreshToken;
