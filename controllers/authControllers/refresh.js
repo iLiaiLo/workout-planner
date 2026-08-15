@@ -1,5 +1,5 @@
 import AppError from "../../errorhandlers/AppError.js";
-
+import jwt from "jsonwebtoken";
 const refreshToken = (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -14,17 +14,31 @@ const refreshToken = (req, res, next) => {
         return next(error);
       }
       const newAccessToken = jwt.sign(
-        { id: user.id },
+        { id: user.id, role: user.role },
         process.env.JWT_ACCESS_KEY,
-        { expiresIn: "1d" },
+        { expiresIn: "15m" },
       );
+
+      const newRefreshToken = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_REFRESH_KEY,
+        { expiresIn: "7d" },
+      );
+
+      const options = {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+      };
 
       return res
         .cookie("accessToken", newAccessToken, {
-          httpOnly: true,
-          sameSite: "strict",
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 24 * 60 * 60 * 1000,
+          ...options,
+          maxAge: 15 * 60 * 1000,
+        })
+        .cookie("refreshToken", newRefreshToken, {
+          ...options,
+          maxAge: 7 * 24 * 3600 * 1000,
         })
         .json({ message: "Token refreshed successfully" });
     });

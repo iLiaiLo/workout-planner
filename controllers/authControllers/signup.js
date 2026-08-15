@@ -28,25 +28,29 @@ const signup = async (req, res, next) => {
     const JWT_REFRESH_KEY = process.env.JWT_REFRESH_KEY;
 
     const accessToken = jwt.sign({ id: user._id, role }, JWT_ACCESS_KEY, {
-      expiresIn: "1d",
+      expiresIn: "15m",
+      algorithm: "HS256",
     });
 
     const refreshToken = jwt.sign({ id: user._id, role }, JWT_REFRESH_KEY, {
-      expiresIn: "2d",
+      expiresIn: "7d",
+      algorithm: "HS256",
     });
+
+    const options = {
+      httpOnly: true,
+      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
+    };
 
     return res
       .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "Strict",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000,
+        ...options,
+        maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: "Strict",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 48 * 60 * 60 * 1000,
+        ...options,
+        maxAge: 7 * 60 * 3600 * 1000,
       })
       .status(201)
       .json({ message: "user created successfully" });
