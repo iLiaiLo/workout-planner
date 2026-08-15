@@ -28,23 +28,25 @@ const login = async (req, res, next) => {
     const NODE_ENV = process.env.NODE_ENV;
     const { _id, role } = existingUser;
     const accessToken = jwt.sign({ id: _id, role }, JWT_ACCESS_KEY, {
-      expiresIn: "1d",
+      expiresIn: "15m",
+      algorithm: "HS256",
     });
     const refreshToken = jwt.sign({ id: _id, role }, JWT_REFRESH_KEY, {
-      expiresIn: "2d",
+      expiresIn: "7d",
+      algorithm: "HS256",
     });
     return res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         sameSite: "Strict",
         secure: NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         sameSite: "Strict",
         secure: NODE_ENV === "production",
-        maxAge: 48 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 3600 * 1000,
       })
       .status(200)
       .json({ message: "user logged in successfully" });
