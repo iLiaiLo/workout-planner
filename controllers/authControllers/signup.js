@@ -53,7 +53,7 @@ const signup = async (req, res, next) => {
         maxAge: 7 * 60 * 3600 * 1000,
       })
       .status(201)
-      .json({ message: "user created successfully" });
+      .json({ message: "user created successfully and logged in" });
   } catch (error) {
     next(error);
   }
